@@ -1,8 +1,14 @@
+# Can be ignored
+# Not required if we use minio-service.yaml which also exposes 9090 for web UI
 apiVersion: v1
 kind: Service
 metadata:
   name: minio
-  namespace: default
+  namespace: minio-dev
 spec:
-  type: ExternalName
-  externalName: minio-proj.minio-ns.svc.cluster.local
+  ports:
+    - protocol: "TCP"
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: minio

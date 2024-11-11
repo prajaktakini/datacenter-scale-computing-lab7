@@ -1,3 +1,4 @@
+# Can be ignored
 #!/bin/sh
 kubectl apply -f redis/redis-deployment.yaml
 kubectl apply -f redis/redis-service.yaml

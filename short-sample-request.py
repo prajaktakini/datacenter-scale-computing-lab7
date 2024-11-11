@@ -11,7 +11,7 @@ import glob
 #
 # Use localhost & port 5000 if not specified by environment variable REST
 #
-REST = os.getenv("REST") or "localhost:5000"
+REST = os.getenv("REST") or "localhost:5001"
 
 ##
 # The following routine makes a JSON REST query of the specified type
@@ -27,6 +27,7 @@ def mkReq(reqmethod, endpoint, data, verbose=True):
     response = reqmethod(f"http://{REST}/{endpoint}", data=jsonData,
                          headers={'Content-type': 'application/json'})
     if response.status_code == 200:
+        print("Success response")
         jsonResponse = json.dumps(response.json(), indent=4, sort_keys=True)
         print(jsonResponse)
         return
@@ -42,7 +43,7 @@ for mp3 in glob.glob("data/short*mp3"):
         data={
             "mp3": base64.b64encode( open(mp3, "rb").read() ).decode('utf-8'),
             "callback": {
-                "url": "http://localhost:5000",
+                "url": "http://rest:5000/callback",
                 "data": {"mp3": mp3, 
                          "data": "to be returned"}
             }
@@ -50,6 +51,21 @@ for mp3 in glob.glob("data/short*mp3"):
         verbose=True
         )
     print(f"Cache from server is")
-    mkReq(requests.get, "apiv1/queue", data=None)
+    #mkReq(requests.get, "apiv1/queue", data=None)
 
 sys.exit(0)
+
+# Make GET queue request
+# curl -X GET http://localhost:5001/apiv1/queue
+
+# Make GET track request
+# curl -X GET "http://localhost:5001/apiv1/track/{hash}/vocals" -o vocals.mp3
+# curl -X GET "http://localhost:5001/apiv1/track/{hash}/bass" -o bass.mp3
+# curl -X GET "http://localhost:5001/apiv1/track/{hash}/drums" -o drums.mp3
+# curl -X GET "http://localhost:5001/apiv1/track/{hash}/other" -o other.mp3
+
+# Make DELETE track request
+#curl -X DELETE "http://localhost:5001/apiv1/remove/{hash}/vocals"
+#curl -X DELETE "http://localhost:5001/apiv1/remove/{hash}/bass"
+#curl -X DELETE "http://localhost:5001/apiv1/remove/{hash}/drums"
+#curl -X DELETE "http://localhost:5001/apiv1/remove/{hash}/other"
